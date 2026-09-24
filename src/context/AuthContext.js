@@ -13,6 +13,9 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         setTokenState(getToken());
         setReady(true);
+        const sync = () => setTokenState(getToken());
+        window.addEventListener('storage', sync);
+        return () => window.removeEventListener('storage', sync);
     }, []);
 
     const login = (t) => {
@@ -23,7 +26,7 @@ export function AuthProvider({ children }) {
     const logout = () => {
         clearToken();
         setTokenState(null);
-        router.push('/login');
+        router.replace('/login');
     };
 
     return (
