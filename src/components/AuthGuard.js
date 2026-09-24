@@ -9,9 +9,13 @@ export default function AuthGuard({ children }) {
     const router = useRouter();
 
     useEffect(() => {
-        if (ready && !token) router.replace('/login');
+        if (ready && !token) {
+            router.replace('/login');
+        }
     }, [ready, token, router]);
 
-    if (!ready || !token) return <Loader />;
+    if (!ready) return <Loader center />;
+    if (!token) return null; 
+
     return <>{children}</>;
 }
