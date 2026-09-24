@@ -257,7 +257,8 @@ All generated code was reviewed, modified, and tested during development.
 
 ## 🚀 Deployment
 
-The application can be deployed using **Vercel** or **Netlify**.
+The application can be deployed using **Vercel**.
+Link: `https://admindashboard-rust-two.vercel.app/login`
 
 ## 👨‍💻 Author
 
@@ -265,10 +266,6 @@ The application can be deployed using **Vercel** or **Netlify**.
 
 B.Tech Computer Science & Engineering
 
-GitHub: `Your GitHub URL`
+GitHub: `https://github.com/vishal14marathe`
 
-LinkedIn: `Your LinkedIn URL`
 
-## 📄 License
-
-Created for educational and assignment purposes.
