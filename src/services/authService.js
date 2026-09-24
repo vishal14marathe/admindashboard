@@ -6,5 +6,5 @@ export async function login(username, password) {
         password,
         expiresInMins: 60,
     });
-    return res.data; // { accessToken, refreshToken, ... }
+    return res.data;  
 }

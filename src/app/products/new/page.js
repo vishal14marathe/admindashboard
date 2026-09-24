@@ -13,7 +13,6 @@ export default function NewProductPage() {
   const handleSubmit = async (data) => {
     if (saving) return;
     setSaving(true);
-    // Simulate an API call
     await new Promise((r) => setTimeout(r, 300));
     addProduct({ ...data, thumbnail: '/placeholder.png', images: [] });
     setSaving(false);

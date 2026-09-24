@@ -8,6 +8,8 @@ import Loader from '@/components/Loader';
 import ErrorState from '@/components/ErrorState';
 import { getProductById } from '@/services/productService';
 import { getMergedProduct } from '@/store/productOverlay';
+import Stars from '@/components/Stars';
+const FALLBACK = 'https://dummyjson.com/icon.png';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -35,7 +37,15 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <AuthGuard><Navbar /><Loader /></AuthGuard>;
+  if (loading) {
+    return (
+      <AuthGuard>
+        <Navbar />
+        <Loader />
+      </AuthGuard>
+    );
+  }
+
   if (error || !product) {
     return (
       <AuthGuard>
@@ -45,51 +55,113 @@ export default function ProductDetailPage() {
     );
   }
 
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [product.thumbnail || FALLBACK];
+
   return (
     <AuthGuard>
       <Navbar />
-      <main className="p-4 md:p-6 max-w-5xl mx-auto">
-        <Link href="/products" className="text-blue-600 text-sm">← Back to products</Link>
+      <main className="p-4 md:p-8 max-w-5xl mx-auto w-full">
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-blue-600 transition mb-4"
+        >
+          ← Back to products
+        </Link>
 
-        <h1 className="text-2xl font-bold mt-2">{product.title}</h1>
-        <p className="text-gray-500 capitalize">{product.category}</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div className="flex flex-wrap gap-3">
-            {(product.images && product.images.length > 0 ? product.images : [product.thumbnail]).map(
-              (img, i) => (
-                <img key={i} src={img} alt={product.title} className="w-40 h-40 object-cover rounded border" />
-              )
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-2xl font-semibold">${product.price}</p>
-            <p>⭐ {product.rating} / 5</p>
-            <p>Stock: {product.stock}</p>
-            <p>{product.description}</p>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <div className="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+                {product.title}
+              </h1>
+              <span className="inline-block mt-2 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 capitalize">
+                {product.category}
+              </span>
+            </div>
             <Link
               href={`/products/${product.id}/edit`}
-              className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition"
             >
               Edit
             </Link>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img || FALLBACK}
+                  alt={product.title}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = FALLBACK;
+                  }}
+                  className="w-40 h-40 object-cover rounded-xl border border-slate-200 bg-slate-50"
+                />
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-3xl font-bold text-slate-900">₹{product.price}</p>
+              <div className="flex items-center gap-4 text-sm text-slate-600">
+                <span>⭐ {product.rating} / 5</span>
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${product.stock > 20
+                    ? 'bg-green-50 text-green-700'
+                    : product.stock > 0
+                      ? 'bg-amber-50 text-amber-700'
+                      : 'bg-red-50 text-red-700'
+                    }`}
+                >
+                  {product.stock} in stock
+                </span>
+              </div>
+              <p className="text-slate-700 leading-relaxed">{product.description}</p>
+            </div>
+          </div>
         </div>
 
-        <h2 className="text-xl font-semibold mt-10 mb-3">Reviews</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mt-10 mb-4">Reviews</h2>
+
         {product.reviews && product.reviews.length > 0 ? (
           <div className="space-y-3">
             {product.reviews.map((r, i) => (
-              <div key={i} className="border rounded p-3 bg-white">
-                <p className="font-medium">{r.reviewerName} · ⭐ {r.rating}</p>
-                <p className="text-gray-700">{r.comment}</p>
-                <p className="text-xs text-gray-400">{new Date(r.date).toLocaleDateString()}</p>
+              <div
+                key={i}
+                className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm fade-in"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {/* Avatar with initials */}
+                    <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold flex items-center justify-center">
+                      {r.reviewerName
+                        ?.split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-800">{r.reviewerName}</p>
+                      <p className="text-xs text-slate-400">
+                        {new Date(r.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Stars value={r.rating} size="sm" showNumber />
+                </div>
+
+                <p className="text-slate-600 text-sm mt-3">{r.comment}</p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No reviews yet.</p>
+          <p className="text-slate-500">No reviews yet.</p>
         )}
       </main>
     </AuthGuard>

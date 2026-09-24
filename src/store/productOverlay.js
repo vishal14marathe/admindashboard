@@ -1,5 +1,4 @@
-// Since DummyJSON doesn't persist add/edit/delete, we keep changes in
-// localStorage so the UI reflects them. This is the "optimistic overlay".
+
 const KEY = 'product_overlay_v1';
 
 function read() {
@@ -13,8 +12,17 @@ function read() {
 }
 
 function write(data) {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+    try {
         localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (err) {
+        console.warn('[overlay] localStorage write failed:', err?.message || err);
+        data.added = (data.added || []).slice(0, 5);
+        try {
+            localStorage.setItem(KEY, JSON.stringify(data));
+        } catch (err2) {
+            console.error('[overlay] still failed after trimming:', err2);
+        }
     }
 }
 
@@ -30,13 +38,12 @@ export function applyOverlay(products) {
         .filter((p) => !deletedSet.has(p.id))
         .map((p) => (edited[p.id] ? { ...p, ...edited[p.id] } : p));
 
-    // Put newly added products at the top
     return [...added.filter((p) => !deletedSet.has(p.id)), ...merged];
 }
 
 export function addProduct(product) {
     const data = read();
-    data.added.unshift({ ...product, id: Date.now() }); // temp id
+    data.added.unshift({ ...product, id: Date.now() });
     write(data);
 }
 

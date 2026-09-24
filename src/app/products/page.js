@@ -23,7 +23,6 @@ import {
 export default function ProductsPage() {
   const { searchParams, setParams } = useUrlState();
 
-  // ---- Read URL params with safe defaults ----
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
   const limitRaw = parseInt(searchParams.get('limit') || '10', 10);
   const limit = [10, 20, 50].includes(limitRaw) ? limitRaw : 10;
@@ -32,7 +31,6 @@ export default function ProductsPage() {
   const sortBy = searchParams.get('sortBy') || '';
   const order = searchParams.get('order') || 'asc';
 
-  // ---- State ----
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -41,15 +39,12 @@ export default function ProductsPage() {
   const [confirm, setConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Guard against out-of-order responses
   const requestIdRef = useRef(0);
 
-  // ---- Load categories once ----
   useEffect(() => {
     getCategories().then(setCategories).catch(() => setCategories([]));
   }, []);
 
-  // ---- Load products ----
   const loadProducts = useCallback(async () => {
     const requestId = ++requestIdRef.current;
     setLoading(true);
@@ -63,10 +58,8 @@ export default function ProductsPage() {
         category: category || undefined,
       });
 
-      // Ignore stale responses
       if (requestId !== requestIdRef.current) return;
 
-      // Apply local overlay (added/edited/deleted)
       const merged = applyOverlay(data.products);
       const sorted = sortProducts(merged, sortBy, order);
 
@@ -84,7 +77,7 @@ export default function ProductsPage() {
     loadProducts();
   }, [loadProducts]);
 
-  // ---- Handlers ----
+  
   const handleFilterChange = (updates) => setParams(updates);
   const handlePageChange = (newPage) => setParams({ page: newPage });
   const handleLimitChange = (newLimit) => setParams({ limit: newLimit, page: 1 });
@@ -98,7 +91,7 @@ export default function ProductsPage() {
     deleteProduct(confirm.id);
     setConfirm(null);
     setDeleting(false);
-    loadProducts(); // re-apply overlay
+    loadProducts();  
   };
 
   return (
