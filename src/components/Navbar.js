@@ -5,19 +5,29 @@ import { useAuth } from '@/context/AuthContext';
 export default function Navbar() {
     const { logout } = useAuth();
     return (
-        <nav className="flex items-center justify-between bg-gray-900 text-white px-4 py-3">
-            <div className="flex gap-4">
-                <Link href="/products" className="font-semibold">Products</Link>
-                <Link href="/products/new" className="text-sm opacity-80 hover:opacity-100">
-                    + Add Product
-                </Link>
+        <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                    <Link
+                        href="/products"
+                        className="text-slate-900 font-semibold tracking-tight hover:text-blue-600 transition"
+                    >
+                        🛍️ Product Admin
+                    </Link>
+                    <Link
+                        href="/products/new"
+                        className="text-sm text-slate-600 hover:text-blue-600 transition"
+                    >
+                        + Add Product
+                    </Link>
+                </div>
+                <button
+                    onClick={logout}
+                    className="text-sm px-3 py-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition font-medium"
+                >
+                    Logout
+                </button>
             </div>
-            <button
-                onClick={logout}
-                className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
-            >
-                Logout
-            </button>
         </nav>
     );
 }
