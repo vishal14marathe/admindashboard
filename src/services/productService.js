@@ -1,7 +1,6 @@
 import api from '@/lib/axios';
 
 export async function getProducts({ limit, skip, search, category, sortBy, order }) {
-    // Search and category can't be combined in DummyJSON
     if (search) {
         const res = await api.get('/products/search', {
             params: { q: search, limit, skip },
@@ -25,11 +24,9 @@ export async function getProductById(id) {
 
 export async function getCategories() {
     const res = await api.get('/products/categories');
-    // Normalize: API may return strings or objects
     return res.data.map((c) => (typeof c === 'string' ? c : c.slug || c.name));
 }
 
-// Client-side sorting (since API sort params aren't reliable across endpoints)
 export function sortProducts(products, sortBy, order) {
     if (!sortBy) return products;
     const sorted = [...products].sort((a, b) => {
