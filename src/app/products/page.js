@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import AuthGuard from '@/components/AuthGuard';
 import Navbar from '@/components/Navbar';
 import SearchBar from '@/components/SearchBar';
@@ -15,12 +15,10 @@ import useUrlState from '@/hooks/useUrlState';
 import { getProducts, getCategories, sortProducts } from '@/services/productService';
 import {
   applyOverlay,
-  addProduct,
-  editProduct,
   deleteProduct,
 } from '@/store/productOverlay';
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const { searchParams, setParams } = useUrlState();
 
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
@@ -77,7 +75,6 @@ export default function ProductsPage() {
     loadProducts();
   }, [loadProducts]);
 
-  
   const handleFilterChange = (updates) => setParams(updates);
   const handlePageChange = (newPage) => setParams({ page: newPage });
   const handleLimitChange = (newLimit) => setParams({ limit: newLimit, page: 1 });
@@ -91,7 +88,7 @@ export default function ProductsPage() {
     deleteProduct(confirm.id);
     setConfirm(null);
     setDeleting(false);
-    loadProducts();  
+    loadProducts();
   };
 
   return (
@@ -137,10 +134,18 @@ export default function ProductsPage() {
         open={!!confirm}
         title="Delete product"
         message={`Are you sure you want to delete "${confirm?.title}"?`}
-        onCancel={() => setConfirm(null)}
         onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirm(null)}
         loading={deleting}
       />
     </AuthGuard>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<Loader center />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }
