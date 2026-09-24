@@ -1,13 +1,12 @@
-
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { isLoggedIn } from '@/lib/auth';
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-
-      <div className="bg-amber-400">
-        Vishal
-      </div>
-
-    </div>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    router.replace(isLoggedIn() ? '/products' : '/login');
+  }, [router]);
+  return null;
 }
