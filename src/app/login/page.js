@@ -14,44 +14,63 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (loading) return; // prevent double submit
+        if (loading) return;
         setLoading(true);
         setError('');
         try {
             const data = await loginApi(username, password);
+            console.log('LOGIN OK:', data);
             login(data.accessToken);
-            router.push('/products');
+            router.replace('/products');
         } catch (err) {
-            setError(err.response?.data?.message || 'Invalid username or password');
+            console.error('LOGIN FAILED:', err);
+            setError(
+                err.response?.data?.message ||
+                err.message ||
+                'Invalid username or password'
+            );
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4">
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow w-full max-w-sm space-y-4">
-                <h1 className="text-xl font-bold">Login</h1>
+        <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+            <form
+                onSubmit={handleSubmit}
+                className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-slate-100 p-8 space-y-5"
+            >
+                <div className="text-center mb-2">
+                    <div className="text-3xl">🛍️</div>
+                    <h1 className="text-2xl font-bold text-slate-900 mt-2">Welcome back</h1>
+                    <p className="text-sm text-slate-500 mt-1">Sign in to manage products</p>
+                </div>
 
-                {error && <p className="text-red-600 text-sm">{error}</p>}
+                {error && (
+                    <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                        {error}
+                    </div>
+                )}
 
-                <div>
-                    <label className="block text-sm font-medium">Username</label>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-slate-700">Username</label>
                     <input
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="border rounded w-full px-3 py-2"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                        placeholder="emilys"
                         required
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium">Password</label>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-slate-700">Password</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="border rounded w-full px-3 py-2"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                        placeholder="••••••••"
                         required
                     />
                 </div>
@@ -59,13 +78,14 @@ export default function LoginPage() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
                 >
-                    {loading ? 'Logging in...' : 'Login'}
+                    {loading ? 'Signing in…' : 'Sign in'}
                 </button>
 
-                <p className="text-xs text-gray-500">
-                    Demo: emilys / emilyspass
+                <p className="text-xs text-center text-slate-400 pt-2">
+                    Demo · <code className="bg-slate-100 px-1.5 py-0.5 rounded">emilys</code> /{' '}
+                    <code className="bg-slate-100 px-1.5 py-0.5 rounded">emilyspass</code>
                 </p>
             </form>
         </div>
